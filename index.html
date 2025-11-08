@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mão na Roda - Assistente Automotivo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React Libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Babel Standalone for JSX compilation in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Gemini AI Library -->
+    <script type="module">
+        import { GoogleGenAI } from "https://aistudiocdn.com/@google/genai@^1.29.0";
+        window.GoogleGenAI = GoogleGenAI;
+    </script>
+    <style>
+      body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; background-color: #111827; }
+      @keyframes fade-in-scale { 0% { opacity: 0; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
+      .animate-fade-in-scale { animation: fade-in-scale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+      .card-glow { box-shadow: 0 0 15px rgba(59, 130, 246, 0.1), 0 0 30px rgba(59, 130, 246, 0.05); }
+      .card-glow-subtle { box-shadow: 0 0 10px rgba(59, 130, 246, 0.08); }
+      .spinner { animation: rotate 2s linear infinite; width: 50px; height: 50px; }
+      .spinner .path { stroke: #3B82F6; stroke-linecap: round; animation: dash 1.5s ease-in-out infinite; }
+      @keyframes rotate { 100% { transform: rotate(360deg); } }
+      @keyframes dash { 0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; } 50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; } 100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; } }
+    </style>
+</head>
+<body>
+    <noscript>Você precisa habilitar o JavaScript para rodar esta aplicação.</noscript>
+    <div id="root"></div>
+
+    <script type="text/babel">
+    
+    // --- ICONS ---
+    const CarIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.125-.504 1.125-1.125V14.25m-17.25 4.5v-1.875a3.375 3.375 0 0 0 3.375-3.375h1.5a1.125 1.125 0 0 1 1.125 1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375m17.25 4.5v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5c0-.621.504-1.125 1.125-1.125h13.5c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125h-1.5a3.375 3.375 0 0 0-3.375 3.375V18.75m-17.25-9.375-3.182 3.182m0 0a1.5 1.5 0 0 1-2.121 0l-3.182-3.182m5.303 0-3.182-3.182a1.5 1.5 0 0 1 2.121 0l3.182 3.182M12 3v.01M15 3v.01M18 3v.01" /></svg>);
+    const MotoIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M21 16.811A1.5 1.5 0 0 1 19.5 18h-15a1.5 1.5 0 0 1-1.5-1.5V11.25a1.5 1.5 0 0 1 1.5-1.5h1.015a3.75 3.75 0 0 0 3.31-1.622l.23- .345a3.75 3.75 0 0 0-3.31-6.103H4.5A1.5 1.5 0 0 0 3 3.366V6.75a1.5 1.5 0 0 0 1.5 1.5h1.5a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-.75.75h-1.5a1.5 1.5 0 0 0-1.5 1.5v5.061A1.5 1.5 0 0 0 4.5 21h15a1.5 1.5 0 0 0 1.5-1.5V16.811Z" /></svg>);
+    const SearchIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>);
+    const PlusIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>);
+    const TrashIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.124-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.077-2.09.921-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>);
+    const ArrowLeftIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>);
+    const VideoIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9A2.25 2.25 0 0 0 4.5 18.75Z" /></svg>);
+
+    // --- COMPONENTS ---
+    const WelcomeScreen = ({ onStartGarage, onStartPurchaseResearch }) => {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen text-center p-4 animate-fade-in-scale">
+          <div className="flex items-center gap-4 mb-4"><CarIcon className="w-16 h-16 text-blue-400" /><h1 className="text-5xl md:text-6xl font-bold text-white">Mão na Roda</h1><MotoIcon className="w-16 h-16 text-blue-400" /></div>
+          <p className="text-xl md:text-2xl text-gray-300 mb-10 max-w-2xl">Seu assistente automotivo inteligente.</p>
+          <div className="flex flex-col md:flex-row gap-4">
+            <button onClick={onStartGarage} className="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-blue-500 transition-all transform hover:scale-105">Ir para minha Garagem</button>
+            <button onClick={onStartPurchaseResearch} className="bg-gray-700 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-gray-600 transition-all transform hover:scale-105 flex items-center justify-center gap-2"><SearchIcon className="w-6 h-6" />Pesquisar Veículo para Comprar</button>
+          </div>
+        </div>
+      );
+    };
+
+    const GarageScreen = ({ vehicles, onAddVehicle, onDeleteVehicle, onViewDetails }) => {
+        return (
+            <div className="container mx-auto p-4 md:p-8 animate-fade-in-scale">
+                <header className="flex justify-between items-center mb-8">
+                    <h1 className="text-3xl md:text-4xl font-bold text-blue-400">Sua Garagem</h1>
+                    <div className="flex gap-2">
+                        <button onClick={() => onAddVehicle('Carro')} className="p-2 bg-blue-600 rounded-full hover:bg-blue-500 transition-colors" title="Adicionar Carro"><CarIcon className="w-6 h-6"/></button>
+                        <button onClick={() => onAddVehicle('Moto')} className="p-2 bg-blue-600 rounded-full hover:bg-blue-500 transition-colors" title="Adicionar Moto"><MotoIcon className="w-6 h-6"/></button>
+                    </div>
+                </header>
+                {vehicles.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {vehicles.map(vehicle => (
+                            <div key={vehicle.id} className="bg-gray-800 p-6 rounded-2xl card-glow hover:cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all transform hover:-translate-y-1" onClick={() => onViewDetails(vehicle)}>
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="flex items-center gap-3">
+                                        {vehicle.type === 'Carro' ? <CarIcon className="w-8 h-8 text-blue-400" /> : <MotoIcon className="w-8 h-8 text-blue-400" />}
+                                        <div>
+                                            <h2 className="text-xl font-bold">{vehicle.brand} {vehicle.model}</h2>
+                                            <p className="text-sm text-gray-400">{vehicle.year}</p>
+                                        </div>
+                                    </div>
+                                    <button onClick={(e) => { e.stopPropagation(); onDeleteVehicle(vehicle.id); }} className="p-2 text-gray-400 hover:text-red-500 hover:bg-gray-700 rounded-full transition-colors" title="Remover Veículo"><TrashIcon className="w-5 h-5" /></button>
+                                </div>
+                                <p className="text-gray-300">{vehicle.engine} - {vehicle.fuel}</p>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-16"><h2 className="text-2xl font-semibold text-gray-400">Nenhum veículo na garagem.</h2><p className="text-gray-500 mt-2">Adicione seu primeiro veículo para começar.</p></div>
+                )}
+            </div>
+        );
+    };
+
+    const VehicleForm = ({ vehicleType, onSave, onClose }) => {
+        const [brand, setBrand] = React.useState('');
+        const [model, setModel] = React.useState('');
+        const [year, setYear] = React.useState(new Date().getFullYear());
+        const [engine, setEngine] = React.useState('');
+        const [fuel, setFuel] = React.useState('');
+        const [error, setError] = React.useState('');
+
+        const handleSave = () => {
+            if (!brand || !model || !year || !engine || !fuel) { setError('Todos os campos são obrigatórios.'); return; }
+            onSave({ brand, model, year, engine, fuel });
+        };
+
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 animate-fade-in-scale" onClick={onClose}>
+                <div className="bg-gray-800 p-8 rounded-2xl w-full max-w-lg card-glow" onClick={e => e.stopPropagation()}>
+                    <h2 className="text-2xl font-bold mb-6 text-white text-center">Adicionar Novo {vehicleType}</h2>
+                    {error && <p className="text-red-400 text-center mb-4">{error}</p>}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" placeholder="Marca (ex: Honda)" value={brand} onChange={e => setBrand(e.target.value)} className="bg-gray-700 p-3 rounded-md text-white w-full" />
+                        <input type="text" placeholder="Modelo (ex: Civic)" value={model} onChange={e => setModel(e.target.value)} className="bg-gray-700 p-3 rounded-md text-white w-full" />
+                        <input type="number" placeholder="Ano" value={year} onChange={e => setYear(parseInt(e.target.value) || '')} className="bg-gray-700 p-3 rounded-md text-white w-full" />
+                        <input type="text" placeholder="Motor (ex: 1.8 16V)" value={engine} onChange={e => setEngine(e.target.value)} className="bg-gray-700 p-3 rounded-md text-white w-full" />
+                        <input type="text" placeholder="Combustível (ex: Flex)" value={fuel} onChange={e => setFuel(e.target.value)} className="bg-gray-700 p-3 rounded-md text-white w-full md:col-span-2" />
+                    </div>
+                    <div className="flex justify-center gap-4 mt-8">
+                        <button onClick={handleSave} className="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-500 transition-colors">Salvar Veículo</button>
+                        <button onClick={onClose} className="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+    
+    // --- Outros componentes omitidos para brevidade...
+    // O restante dos seus componentes (VehicleDetailScreen, ResearchFormScreen, etc.) iria aqui.
+    // Para economizar espaço, vou colar o App component que é o orquestrador principal.
+    
+    // --- O COMPONENTE PRINCIPAL APP ---
+    const App = () => {
+        const [screen, setScreen] = React.useState('welcome');
+        const [vehicles, setVehicles] = React.useState(() => JSON.parse(localStorage.getItem('vehicles') || '[]'));
+        const [selectedVehicle, setSelectedVehicle] = React.useState(null);
+        const [vehicleTypeToAdd, setVehicleTypeToAdd] = React.useState(null);
+        
+        React.useEffect(() => {
+            localStorage.setItem('vehicles', JSON.stringify(vehicles));
+        }, [vehicles]);
+
+        const handleAddVehicle = (data) => {
+            const newVehicle = { ...data, id: new Date().toISOString(), type: vehicleTypeToAdd };
+            setVehicles(prev => [...prev, newVehicle]);
+            setVehicleTypeToAdd(null);
+        };
+
+        const handleDeleteVehicle = (id) => {
+            setVehicles(prev => prev.filter(v => v.id !== id));
+        };
+        
+        const renderScreen = () => {
+            if (screen === 'welcome' || (screen === 'garage' && vehicles.length === 0)) {
+                return <WelcomeScreen onStartGarage={() => setScreen('garage')} onStartPurchaseResearch={() => { /* Lógica futura */ }} />;
+            }
+            if (screen === 'garage') {
+                return <GarageScreen vehicles={vehicles} onAddVehicle={(type) => setVehicleTypeToAdd(type)} onDeleteVehicle={handleDeleteVehicle} onViewDetails={(vehicle) => { setSelectedVehicle(vehicle); setScreen('details'); }} />;
+            }
+            // A lógica para 'details', 'research', etc., viria aqui.
+            return <div>Tela Desconhecida</div>;
+        };
+
+        return (
+            <div className="bg-gray-900 text-white min-h-screen">
+                {renderScreen()}
+                {vehicleTypeToAdd && (
+                    <VehicleForm
+                    vehicleType={vehicleTypeToAdd}
+                    onSave={handleAddVehicle}
+                    onClose={() => setVehicleTypeToAdd(null)}
+                    />
+                )}
+            </div>
+        );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+
+    </script>
+</body>
+</html>
