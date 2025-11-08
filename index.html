@@ -35,42 +35,11 @@
     <script type="text/babel">
     
     // --- DATABASE ---
-    const VEHICLE_DATA = {
-        Carro: {
-            Volkswagen: {
-                Gol: { year: 2022, versions: [{ engine: "1.0 MPI", fuel: "Flex" }, { engine: "1.6 MSI", fuel: "Flex" }] },
-                Polo: { year: 2023, versions: [{ engine: "1.0 TSI", fuel: "Flex" }, { engine: "1.4 TSI (GTS)", fuel: "Gasolina" }] },
-                Jetta: { year: 2023, versions: [{ engine: "2.0 TSI (GLI)", fuel: "Gasolina" }] },
-            },
-            Fiat: {
-                Mobi: { year: 2023, versions: [{ engine: "1.0 Fire", fuel: "Flex" }] },
-                Argo: { year: 2023, versions: [{ engine: "1.0 Firefly", fuel: "Flex" }, { engine: "1.3 Firefly", fuel: "Flex" }] },
-                Toro: { year: 2024, versions: [{ engine: "1.3 Turbo", fuel: "Flex" }, { engine: "2.0 Diesel", fuel: "Diesel" }] },
-            },
-            Chevrolet: {
-                Onix: { year: 2024, versions: [{ engine: "1.0 Aspirado", fuel: "Flex" }, { engine: "1.0 Turbo", fuel: "Flex" }] },
-                Tracker: { year: 2024, versions: [{ engine: "1.0 Turbo", fuel: "Flex" }, { engine: "1.2 Turbo", fuel: "Flex" }] },
-            },
-            Honda: {
-                Civic: { year: 2024, versions: [{ engine: "2.0 Híbrido", fuel: "Híbrido" }] },
-                HRV: { year: 2024, versions: [{ engine: "1.5 Aspirado", fuel: "Flex" }, { engine: "1.5 Turbo", fuel: "Flex" }] },
-            }
-        },
-        Moto: {
-            Honda: {
-                "CG 160": { year: 2024, versions: [{ engine: "162.7cc", fuel: "Flex" }] },
-                "CB 300F Twister": { year: 2024, versions: [{ engine: "293.5cc", fuel: "Flex" }] },
-            },
-            Yamaha: {
-                "Fazer 250 FZ25": { year: 2024, versions: [{ engine: "249.5cc", fuel: "Flex" }] },
-                "Lander 250": { year: 2024, versions: [{ engine: "249.5cc", fuel: "Flex" }] },
-            }
-        }
-    };
+    const VEHICLE_DATA = { /* ... Seu banco de dados de veículos ... */ };
 
     // --- ICONS ---
-    const CarIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.125-.504 1.125-1.125V14.25m-17.25 4.5v-1.875a3.375 3.375 0 0 0 3.375-3.375h1.5a1.125 1.125 0 0 1 1.125 1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375m17.25 4.5v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5c0-.621.504-1.125 1.125-1.125h13.5c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125h-1.5a3.375 3.375 0 0 0-3.375 3.375V18.75m-17.25-9.375-3.182 3.182m0 0a1.5 1.5 0 0 1-2.121 0l-3.182-3.182m5.303 0-3.182-3.182a1.5 1.5 0 0 1 2.121 0l3.182 3.182M12 3v.01M15 3v.01M18 3v.01" /></svg>);
-    const MotoIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M21 16.811A1.5 1.5 0 0 1 19.5 18h-15a1.5 1.5 0 0 1-1.5-1.5V11.25a1.5 1.5 0 0 1 1.5-1.5h1.015a3.75 3.75 0 0 0 3.31-1.622l.23- .345a3.75 3.75 0 0 0-3.31-6.103H4.5A1.5 1.5 0 0 0 3 3.366V6.75a1.5 1.5 0 0 0 1.5 1.5h1.5a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-.75.75h-1.5a1.5 1.5 0 0 0-1.5 1.5v5.061A1.5 1.5 0 0 0 4.5 21h15a1.5 1.5 0 0 0 1.5-1.5V16.811Z" /></svg>);
+    const CarIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M5.524 10.658C5.524 10.658 5.75 8.85 7.02 8.5c1.27-.35 2.122 1.05 2.122 1.05s3.528-1.75 6.162-1.75c2.634 0 5.424 1.75 5.424 1.75s.852-1.4 2.122-1.05c1.27.35 1.498 2.158 1.498 2.158L23 14.5c0 .828-.672 1.5-1.5 1.5h-1c-.828 0-1.5-.672-1.5-1.5v-1.29L16.4 15.5c-1.343.875-3.324.875-4.666 0L8.14 13.21l-1.616 1.29c-.828 0-1.5.672-1.5 1.5h-1c-.828 0-1.5-.672-1.5-1.5L5.524 10.658zM18.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM5.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></svg>);
+    const MotoIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-1.42c-.08-.62-.28-1.2-.58-1.72-.2-.33-.45-.62-.75-.85-.4-.32-1.03-.53-1.75-.53h-2c-.72 0-1.35.21-1.75.53-.3.23-.55.52-.75.85C8.2 3.8 8 4.38 7.92 5H6.5C5.84 5 5.28 5.42 5.08 6.01L3 12v5.5c0 .83.67 1.5 1.5 1.5h.5c.83 0 1.5-.67 1.5-1.5v-1h10v1c0 .83.67 1.5 1.5 1.5h.5c.83 0 1.5-.67 1.5-1.5V12l-2.08-5.99zM6.5 15c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm11 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>);
     const SearchIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>);
     const PlusIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>);
     const TrashIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.124-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.077-2.09.921-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>);
@@ -78,51 +47,30 @@
     const VideoIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9A2.25 2.25 0 0 0 4.5 18.75Z" /></svg>);
 
     // --- HELPER FUNCTIONS ---
-    const formatMarkdown = (text) => {
-        if (!text) return '';
-        const lines = text.split('\n'); let html = ''; let inList = false;
-        lines.forEach(line => {
-            line = line.trim();
-            if (line.startsWith('### ')) { if (inList) { html += '</ul>'; inList = false; } html += `<h4 class="text-xl font-semibold text-blue-300 mt-6 mb-3">${line.substring(4)}</h4>`; } 
-            else if (line.startsWith('* ')) { if (!inList) { html += '<ul>'; inList = true; } const listItem = line.substring(2).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); html += `<li class="ml-5 list-disc mb-2">${listItem}</li>`; } 
-            else { if (inList) { html += '</ul>'; inList = false; } if (line) { const paragraph = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); html += `<p class="my-2">${paragraph}</p>`; } }
-        });
-        if (inList) { html += '</ul>'; } return html;
-    };
+    // ... (formatMarkdown)
     
     // --- COMPONENTS ---
-    // ... (Todos os componentes definidos aqui)
-    const SplashScreen = ({ onEnter }) => { /* ... */ };
-    const HomeScreen = ({ onNavigateToGarage, onNavigateToPurchaseResearch }) => { /* ... */ };
-    const GarageScreen = ({ vehicles, onAddVehicle, onDeleteVehicle, onViewDetails }) => { /* ... */ };
-    const VehicleForm = ({ vehicleType, onSave, onClose }) => {
-        const [brand, setBrand] = React.useState('');
-        const [model, setModel] = React.useState('');
-        const [version, setVersion] = React.useState('');
-        const [error, setError] = React.useState('');
-
-        const brands = Object.keys(VEHICLE_DATA[vehicleType] || {});
-        const models = brand ? Object.keys(VEHICLE_DATA[vehicleType][brand] || {}) : [];
-        const versions = model ? VEHICLE_DATA[vehicleType][brand][model].versions : [];
-
-        const handleSave = () => {
-            if (!brand || !model || !version) { setError('Todos os campos são obrigatórios.'); return; }
-            const selectedVersion = versions.find(v => v.engine === version);
-            const vehicleData = {
-                brand, model, year: VEHICLE_DATA[vehicleType][brand][model].year,
-                engine: selectedVersion.engine, fuel: selectedVersion.fuel
-            };
-            onSave(vehicleData);
-        };
-        
-        return (<div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 animate-fade-in-scale" onClick={onClose}><div className="bg-gray-800 p-8 rounded-2xl w-full max-w-lg card-glow" onClick={e => e.stopPropagation()}><h2 className="text-2xl font-bold mb-6 text-white text-center">Adicionar Novo {vehicleType}</h2>{error && <p className="text-red-400 text-center mb-4">{error}</p>}<div className="space-y-4"><select value={brand} onChange={e => { setBrand(e.target.value); setModel(''); setVersion(''); }} className="bg-gray-700 p-3 rounded-md text-white w-full"><option value="">Selecione a Marca</option>{brands.map(b => <option key={b} value={b}>{b}</option>)}</select><select value={model} onChange={e => { setModel(e.target.value); setVersion(''); }} disabled={!brand} className="bg-gray-700 p-3 rounded-md text-white w-full disabled:opacity-50"><option value="">Selecione o Modelo</option>{models.map(m => <option key={m} value={m}>{m}</option>)}</select><select value={version} onChange={e => setVersion(e.target.value)} disabled={!model} className="bg-gray-700 p-3 rounded-md text-white w-full disabled:opacity-50"><option value="">Selecione a Motorização</option>{versions.map((v, i) => <option key={i} value={v.engine}>{v.engine} ({v.fuel})</option>)}</select></div><div className="flex justify-center gap-4 mt-8"><button onClick={handleSave} className="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-500 transition-colors">Salvar Veículo</button><button onClick={onClose} className="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">Cancelar</button></div></div></div>);
-    };
+    const GarageScreen = ({ vehicles, onAddVehicle, onDeleteVehicle, onViewDetails, onBackToHome }) => (
+      <div className="container mx-auto p-4 md:p-8 animate-fade-in-scale">
+        <header className="flex justify-between items-center mb-8">
+          <div className="flex items-center gap-4">
+            <button onClick={onBackToHome} className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-full transition-colors" title="Voltar ao Menu"><ArrowLeftIcon className="w-6 h-6"/></button>
+            <h1 className="text-3xl md:text-4xl font-bold text-blue-400">Sua Garagem</h1>
+          </div>
+          <div className="flex flex-col md:flex-row gap-2">
+            <button onClick={() => onAddVehicle('Carro')} className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-2 text-sm font-semibold"><CarIcon className="w-5 h-5"/><span>Adicionar Carro</span></button>
+            <button onClick={() => onAddVehicle('Moto')} className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-2 text-sm font-semibold"><MotoIcon className="w-5 h-5"/><span>Adicionar Moto</span></button>
+          </div>
+        </header>
+        {/* ... (resto do GarageScreen) */}
+      </div>
+    );
     
-    // ... (Todos os outros componentes)
+    // ... (Todos os outros componentes: SplashScreen, HomeScreen, VehicleForm, etc.)
     
     // --- APP COMPONENT ---
     const App = () => {
-        // ... (Toda a lógica do App, estados e handlers)
+      // ... (Toda a lógica do App, estados e handlers)
     };
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
