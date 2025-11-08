@@ -35,7 +35,32 @@
     <script type="text/babel">
     
     // --- DATABASE ---
-    const VEHICLE_DATA = { /* ... Seu banco de dados de veículos ... */ };
+    const VEHICLE_DATA = {
+        Carro: {
+            Volkswagen: {
+                Gol: { year: 2022, versions: [{ engine: "1.0 MPI", fuel: "Flex" }, { engine: "1.6 MSI", fuel: "Flex" }] },
+                Polo: { year: 2023, versions: [{ engine: "1.0 TSI", fuel: "Flex" }, { engine: "1.4 TSI (GTS)", fuel: "Gasolina" }] },
+                Jetta: { year: 2023, versions: [{ engine: "2.0 TSI (GLI)", fuel: "Gasolina" }] },
+            },
+            Fiat: {
+                Mobi: { year: 2023, versions: [{ engine: "1.0 Fire", fuel: "Flex" }] },
+                Argo: { year: 2023, versions: [{ engine: "1.0 Firefly", fuel: "Flex" }, { engine: "1.3 Firefly", fuel: "Flex" }] },
+                Toro: { year: 2024, versions: [{ engine: "1.3 Turbo", fuel: "Flex" }, { engine: "2.0 Diesel", fuel: "Diesel" }] },
+            },
+            Chevrolet: {
+                Onix: { year: 2024, versions: [{ engine: "1.0 Aspirado", fuel: "Flex" }, { engine: "1.0 Turbo", fuel: "Flex" }] },
+                Tracker: { year: 2024, versions: [{ engine: "1.0 Turbo", fuel: "Flex" }, { engine: "1.2 Turbo", fuel: "Flex" }] },
+            },
+            Honda: {
+                Civic: { year: 2024, versions: [{ engine: "2.0 Híbrido", fuel: "Híbrido" }] },
+                HRV: { year: 2024, versions: [{ engine: "1.5 Aspirado", fuel: "Flex" }, { engine: "1.5 Turbo", fuel: "Flex" }] },
+            }
+        },
+        Moto: {
+            Honda: { "CG 160": { year: 2024, versions: [{ engine: "162.7cc", fuel: "Flex" }] }, "CB 300F Twister": { year: 2024, versions: [{ engine: "293.5cc", fuel: "Flex" }] }, },
+            Yamaha: { "Fazer 250 FZ25": { year: 2024, versions: [{ engine: "249.5cc", fuel: "Flex" }] }, "Lander 250": { year: 2024, versions: [{ engine: "249.5cc", fuel: "Flex" }] }, }
+        }
+    };
 
     // --- ICONS ---
     const CarIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M5.524 10.658C5.524 10.658 5.75 8.85 7.02 8.5c1.27-.35 2.122 1.05 2.122 1.05s3.528-1.75 6.162-1.75c2.634 0 5.424 1.75 5.424 1.75s.852-1.4 2.122-1.05c1.27.35 1.498 2.158 1.498 2.158L23 14.5c0 .828-.672 1.5-1.5 1.5h-1c-.828 0-1.5-.672-1.5-1.5v-1.29L16.4 15.5c-1.343.875-3.324.875-4.666 0L8.14 13.21l-1.616 1.29c-.828 0-1.5.672-1.5 1.5h-1c-.828 0-1.5-.672-1.5-1.5L5.524 10.658zM18.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM5.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></svg>);
@@ -47,30 +72,64 @@
     const VideoIcon = (props) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}><path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9A2.25 2.25 0 0 0 4.5 18.75Z" /></svg>);
 
     // --- HELPER FUNCTIONS ---
-    // ... (formatMarkdown)
+    const formatMarkdown = (text) => {
+        if (!text) return ''; let html = ''; let inList = false;
+        text.split('\n').forEach(line => {
+            line = line.trim();
+            if (line.startsWith('### ')) { if (inList) { html += '</ul>'; inList = false; } html += `<h4 class="text-xl font-semibold text-blue-300 mt-6 mb-3">${line.substring(4)}</h4>`; } 
+            else if (line.startsWith('* ')) { if (!inList) { html += '<ul>'; inList = true; } const listItem = line.substring(2).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); html += `<li class="ml-5 list-disc mb-2">${listItem}</li>`; } 
+            else { if (inList) { html += '</ul>'; inList = false; } if (line) { const paragraph = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); html += `<p class="my-2">${paragraph}</p>`; } }
+        });
+        if (inList) { html += '</ul>'; } return html;
+    };
     
     // --- COMPONENTS ---
-    const GarageScreen = ({ vehicles, onAddVehicle, onDeleteVehicle, onViewDetails, onBackToHome }) => (
-      <div className="container mx-auto p-4 md:p-8 animate-fade-in-scale">
-        <header className="flex justify-between items-center mb-8">
-          <div className="flex items-center gap-4">
-            <button onClick={onBackToHome} className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-full transition-colors" title="Voltar ao Menu"><ArrowLeftIcon className="w-6 h-6"/></button>
-            <h1 className="text-3xl md:text-4xl font-bold text-blue-400">Sua Garagem</h1>
-          </div>
-          <div className="flex flex-col md:flex-row gap-2">
-            <button onClick={() => onAddVehicle('Carro')} className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-2 text-sm font-semibold"><CarIcon className="w-5 h-5"/><span>Adicionar Carro</span></button>
-            <button onClick={() => onAddVehicle('Moto')} className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-2 text-sm font-semibold"><MotoIcon className="w-5 h-5"/><span>Adicionar Moto</span></button>
-          </div>
-        </header>
-        {/* ... (resto do GarageScreen) */}
-      </div>
-    );
-    
-    // ... (Todos os outros componentes: SplashScreen, HomeScreen, VehicleForm, etc.)
+    const SplashScreen = ({ onEnter }) => (<div className="flex flex-col items-center justify-center min-h-screen text-center p-4 animate-fade-in-scale"><div className="flex items-center gap-4 mb-4"><CarIcon className="w-20 h-20 text-blue-400" /><h1 className="text-6xl font-bold text-white">Mão na Roda</h1><MotoIcon className="w-20 h-20 text-blue-400" /></div><p className="text-2xl text-gray-300 mb-12">Bem-vindo ao seu assistente automotivo inteligente.</p><button onClick={onEnter} className="bg-blue-600 text-white font-bold py-3 px-10 rounded-lg text-xl hover:bg-blue-500 transition-all transform hover:scale-105">Entrar</button></div>);
+    const HomeScreen = ({ onNavigateToGarage, onNavigateToPurchaseResearch }) => (<div className="container mx-auto p-4 md:p-8 flex flex-col items-center justify-center min-h-screen text-center animate-fade-in-scale"><header className="mb-12"><h1 className="text-4xl md:text-5xl font-bold text-white">Menu Principal</h1><p className="text-gray-400 mt-4 text-lg">O que você gostaria de fazer?</p></header><div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl"><button onClick={onNavigateToGarage} className="bg-gray-800 p-8 rounded-2xl card-glow text-left hover:ring-2 hover:ring-blue-500 transition-all transform hover:-translate-y-1"><h2 className="text-2xl font-bold text-white mb-2">Minha Garagem</h2><p className="text-gray-400">Gerencie seus veículos, registre manutenções e consulte o assistente IA.</p></button><button onClick={onNavigateToPurchaseResearch} className="bg-gray-800 p-8 rounded-2xl card-glow text-left hover:ring-2 hover:ring-blue-500 transition-all transform hover:-translate-y-1"><h2 className="text-2xl font-bold text-white mb-2">Análise de Compra</h2><p className="text-gray-400">Pesquisando um novo veículo? Use nossa IA para gerar um relatório completo.</p></button></div></div>);
+    const GarageScreen = ({ vehicles, onAddVehicle, onDeleteVehicle, onViewDetails, onBackToHome }) => (<div className="container mx-auto p-4 md:p-8 animate-fade-in-scale"><header className="flex justify-between items-center mb-8"><div className="flex items-center gap-4"><button onClick={onBackToHome} className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-full transition-colors" title="Voltar ao Menu"><ArrowLeftIcon className="w-6 h-6"/></button><h1 className="text-3xl md:text-4xl font-bold text-blue-400">Sua Garagem</h1></div><div className="flex flex-col md:flex-row gap-2"><button onClick={() => onAddVehicle('Carro')} className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-2 text-sm font-semibold"><CarIcon className="w-5 h-5"/><span>Adicionar Carro</span></button><button onClick={() => onAddVehicle('Moto')} className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500 transition-colors flex items-center gap-2 text-sm font-semibold"><MotoIcon className="w-5 h-5"/><span>Adicionar Moto</span></button></div></header>{vehicles.length > 0 ? (<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">{vehicles.map(vehicle => (<div key={vehicle.id} className="bg-gray-800 p-6 rounded-2xl card-glow hover:cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all transform hover:-translate-y-1" onClick={() => onViewDetails(vehicle)}><div className="flex justify-between items-start mb-4"><div className="flex items-center gap-3">{vehicle.type === 'Carro' ? <CarIcon className="w-8 h-8 text-blue-400" /> : <MotoIcon className="w-8 h-8 text-blue-400" />}<div><h2 className="text-xl font-bold">{vehicle.brand} {vehicle.model}</h2><p className="text-sm text-gray-400">{vehicle.year}</p></div></div><button onClick={(e) => { e.stopPropagation(); onDeleteVehicle(vehicle.id); }} className="p-2 text-gray-400 hover:text-red-500 hover:bg-gray-700 rounded-full transition-colors" title="Remover Veículo"><TrashIcon className="w-5 h-5" /></button></div><p className="text-gray-300">{vehicle.engine} - {vehicle.fuel}</p></div>))}</div>) : (<div className="text-center py-16"><h2 className="text-2xl font-semibold text-gray-400">Nenhum veículo na garagem.</h2><p className="text-gray-500 mt-2">Adicione seu primeiro veículo para começar.</p></div>)}</div>);
+    const VehicleForm = ({ vehicleType, onSave, onClose }) => {
+        const [brand, setBrand] = React.useState(''); const [model, setModel] = React.useState(''); const [version, setVersion] = React.useState(''); const [error, setError] = React.useState('');
+        const brands = Object.keys(VEHICLE_DATA[vehicleType] || {});
+        const models = brand ? Object.keys(VEHICLE_DATA[vehicleType][brand] || {}) : [];
+        const versions = model ? VEHICLE_DATA[vehicleType][brand][model].versions : [];
+        const handleSave = () => {
+            if (!brand || !model || !version) { setError('Todos os campos são obrigatórios.'); return; }
+            const selectedVersionData = versions.find(v => `${v.engine} (${v.fuel})` === version);
+            const vehicleData = { brand, model, year: VEHICLE_DATA[vehicleType][brand][model].year, engine: selectedVersionData.engine, fuel: selectedVersionData.fuel };
+            onSave(vehicleData);
+        };
+        return (<div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 animate-fade-in-scale" onClick={onClose}><div className="bg-gray-800 p-8 rounded-2xl w-full max-w-lg card-glow" onClick={e => e.stopPropagation()}><h2 className="text-2xl font-bold mb-6 text-white text-center">Adicionar Novo {vehicleType}</h2>{error && <p className="text-red-400 text-center mb-4">{error}</p>}<div className="space-y-4"><select value={brand} onChange={e => { setBrand(e.target.value); setModel(''); setVersion(''); }} className="bg-gray-700 p-3 rounded-md text-white w-full"><option value="">Selecione a Marca</option>{brands.map(b => <option key={b} value={b}>{b}</option>)}</select><select value={model} onChange={e => { setModel(e.target.value); setVersion(''); }} disabled={!brand} className="bg-gray-700 p-3 rounded-md text-white w-full disabled:opacity-50"><option value="">Selecione o Modelo</option>{models.map(m => <option key={m} value={m}>{m}</option>)}</select><select value={version} onChange={e => setVersion(e.target.value)} disabled={!model} className="bg-gray-700 p-3 rounded-md text-white w-full disabled:opacity-50"><option value="">Selecione a Versão/Motor</option>{versions.map((v, i) => <option key={i} value={`${v.engine} (${v.fuel})`}>{v.engine} ({v.fuel})</option>)}</select></div><div className="flex justify-center gap-4 mt-8"><button onClick={handleSave} className="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-500 transition-colors">Salvar Veículo</button><button onClick={onClose} className="bg-gray-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-500 transition-colors">Cancelar</button></div></div></div>);
+    };
+    const VehicleDetailScreen = ({ vehicle, onBack, onNavigateToMaintenance, onNavigateToResearch, onNavigateToTutorials }) => { /* ... */ };
+    const LoadingState = ({ text, subtext }) => { /* ... */ };
+    const PurchaseResearchFormScreen = ({ onGenerateReport, onBack, isLoading }) => { /* ... */ };
+    const PurchaseResearchResultScreen = ({ vehicle, report, onBack, isLoading }) => { /* ... */ };
     
     // --- APP COMPONENT ---
     const App = () => {
-      // ... (Toda a lógica do App, estados e handlers)
+        const [screen, setScreen] = React.useState('splash');
+        const [vehicles, setVehicles] = React.useState(() => JSON.parse(localStorage.getItem('mao-na-roda-vehicles') || '[]'));
+        const [selectedVehicle, setSelectedVehicle] = React.useState(null);
+        const [vehicleTypeToAdd, setVehicleTypeToAdd] = React.useState(null);
+        
+        React.useEffect(() => { if (screen === 'splash') { const timer = setTimeout(() => setScreen('welcome'), 1500); return () => clearTimeout(timer); } }, [screen]);
+        React.useEffect(() => { localStorage.setItem('mao-na-roda-vehicles', JSON.stringify(vehicles)); }, [vehicles]);
+        
+        const handleAddVehicle = (data) => { const newVehicle = { ...data, id: Date.now().toString(), type: vehicleTypeToAdd }; setVehicles(prev => [...prev, newVehicle]); setVehicleTypeToAdd(null); };
+        const handleDeleteVehicle = (id) => { if (window.confirm('Tem certeza?')) { setVehicles(prev => prev.filter(v => v.id !== id)); } };
+        
+        const renderScreen = () => {
+            switch (screen) {
+                case 'splash': return <SplashScreen onEnter={() => setScreen('welcome')} />;
+                case 'welcome': return <HomeScreen onNavigateToGarage={() => setScreen('garage')} onNavigateToPurchaseResearch={() => setScreen('purchaseResearchForm')} />;
+                case 'garage': return <GarageScreen vehicles={vehicles} onAddVehicle={setVehicleTypeToAdd} onDeleteVehicle={handleDeleteVehicle} onViewDetails={(vehicle) => { setSelectedVehicle(vehicle); setScreen('vehicleDetail'); }} onBackToHome={() => setScreen('welcome')} />;
+                case 'vehicleDetail': return selectedVehicle && <VehicleDetailScreen vehicle={selectedVehicle} onBack={() => setScreen('garage')} onNavigateToMaintenance={() => {}} onNavigateToResearch={() => {}} onNavigateToTutorials={() => {}} />;
+                case 'purchaseResearchForm': return <PurchaseResearchFormScreen onGenerateReport={(v) => console.log(v)} onBack={() => setScreen('welcome')} isLoading={false} />;
+                default: return <SplashScreen onEnter={() => setScreen('welcome')} />;
+            }
+        };
+
+        return (<div className="bg-gray-900 text-white min-h-screen">{renderScreen()}{vehicleTypeToAdd && <VehicleForm vehicleType={vehicleTypeToAdd} onSave={handleAddVehicle} onClose={() => setVehicleTypeToAdd(null)} />}</div>);
     };
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
